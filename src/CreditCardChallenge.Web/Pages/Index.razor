@@ -1,9 +1,38 @@
 ﻿@page "/"
 
-<PageTitle>Index</PageTitle>
+<CardComponent CardDetails="@CardDetails"/>
 
-<h1>Hello, world!</h1>
+<div class="form-container">
+    <div class="mb-1">
+        <label for="exampleFormControlInput1" class="form-label">Card Number</label>
+        <input type="text" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput">
+    </div>
+    <div class="mb-1">
+        <label for="exampleFormControlInput1" class="form-label">Card Name</label>
+        <input type="text" class="form-control" @bind="@CardDetails.CardName" @bind:event="oninput">
+    </div>
+    <div class="mb-1">
+        <label for="exampleFormControlInput1" class="form-label">Expiration Date</label>
+        <input type="text" class="form-control" @bind="@CardDetails.Month" @bind:event="oninput">
+    </div>
+    <div class="mb-1">
+        <input type="text" class="form-control" @bind="@CardDetails.Year" @bind:event="oninput">
+    </div>
+    <div class="mb-1">
+        <label for="exampleFormControlInput1" class="form-label">CVV address</label>
+        <input type="text" class="form-control" @bind="@CardDetails.Cvv" @bind:event="oninput">
+    </div>
+</div>
 
-Welcome to your new app.
+@code {
+    public CardDetails CardDetails { get; set; }
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    [Parameter]
+    public RenderFragment CardVisual { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CardDetails = new();
+    }
+}
