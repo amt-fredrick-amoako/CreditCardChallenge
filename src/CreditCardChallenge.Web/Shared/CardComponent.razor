@@ -1,46 +1,102 @@
-﻿<h3>CardComponent</h3>
-<p>
-    The card is @CardDetails.CardName
-</p>
-<div class="card-container">
+﻿<div class="cards">
+    <div class="card-container">
 
-    <div class="card-header">
+        <div class="card-header">
 
-        <div class="sticker">
+            <div class="sticker">
+            </div>
+            <div class="card-type">
+                <img src="assets/mastercard.png" alt="card type logo">
+            </div>
+
         </div>
-        <div class="card-type">
-            <img src="assets/mastercard.png" alt="card type logo">
+
+        <div class="card-input">
+            <h5>@(CardDetails.CardNumber ?? "#### #### #### ####")</h5>
+        </div>
+
+        <div class="card-footer">
+            <div class="card-name">
+                <h6>
+                    Card Holder
+                </h6>
+                <h5>
+                    @(CardDetails.CardName ?? " AD SOYAD")
+                </h5>
+            </div>
+            <div class="card-expire">
+                <h6>
+                    Expires
+                </h6>
+                <h5>
+                    @(CardDetails.Month ?? "MM")/@(CardDetails.Year ?? "YY")
+                </h5>
+            </div>
         </div>
 
     </div>
+    <div class="card-container">
 
-    <div class="card-input">
-        <h5>@(CardDetails.CardNumber ?? "#### #### #### ####")</h5>
-    </div>
+        <div class="card-header">
 
-    <div class="card-footer">
-        <div class="card-name">
-            <h6>
-                Card Holder
-            </h6>
-            <h5>
-                @(CardDetails.CardName ?? " AD SOYAD")
-            </h5>
+            <div class="sticker">
+            </div>
+            <div class="card-type">
+                <img src="assets/mastercard.png" alt="card type logo">
+            </div>
+
         </div>
-        <div class="card-expire">
-            <h6>
-                Expires
-            </h6>
-            <h5>
-                @(CardDetails.Month ?? "MM")/@(CardDetails.Year ?? "YY")
-            </h5>
-        </div>
-    </div>
 
+        <div class="card-input">
+            @if (CardDetails.CardNumber is null)
+            {
+                <h5>#### #### #### ####</h5>
+            }
+            else
+            {
+                <h5>@FormatCardNumber(CardDetails.CardNumber)</h5>
+            }
+        </div>
+
+        <div class="card-footer">
+            <div class="card-name">
+                <h6>
+                    Card Holder
+                </h6>
+                <h5>
+                    @(CardDetails.CardName ?? " AD SOYAD")
+                </h5>
+            </div>
+            <div class="card-expire">
+                <h6>
+                    Expires
+                </h6>
+                <h5>
+                    @(CardDetails.Month ?? "MM")/@(CardDetails.Year ?? "YY")
+                </h5>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 @code {
     [Parameter]
-    public CardDetails CardDetails { get; set; }
+    public CardDetails? CardDetails { get; set; }
 
+    // Method to format the card number
+    private string FormatCardNumber(string input)
+    {
+        // Remove any existing spaces
+        string formatted = input.Replace(" ", "");
+
+        // Insert spaces after every four characters
+        if (formatted.Length > 4)
+        {
+            formatted = string.Join(" ", Enumerable.Range(0, (int)Math.Ceiling(formatted.Length / 4.0))
+                .Select(i => formatted.Substring(i * 4, Math.Min(4, formatted.Length - i * 4))));
+        }
+
+        return formatted;
+    }
 }

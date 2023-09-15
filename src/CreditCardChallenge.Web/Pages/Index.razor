@@ -1,34 +1,61 @@
 ﻿@page "/"
+@inject IJSRuntime JsRuntime
 
-<CardComponent CardDetails="@CardDetails"/>
 
 <div class="form-container">
-    <div class="mb-1">
-        <label for="exampleFormControlInput1" class="form-label">Card Number</label>
-        <input type="text" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput">
-    </div>
-    <div class="mb-1">
-        <label for="exampleFormControlInput1" class="form-label">Card Name</label>
-        <input type="text" class="form-control" @bind="@CardDetails.CardName" @bind:event="oninput">
-    </div>
-    <div class="mb-1">
-        <label for="exampleFormControlInput1" class="form-label">Expiration Date</label>
-        <input type="text" class="form-control" @bind="@CardDetails.Month" @bind:event="oninput">
-    </div>
-    <div class="mb-1">
-        <input type="text" class="form-control" @bind="@CardDetails.Year" @bind:event="oninput">
-    </div>
-    <div class="mb-1">
-        <label for="exampleFormControlInput1" class="form-label">CVV address</label>
-        <input type="text" class="form-control" @bind="@CardDetails.Cvv" @bind:event="oninput">
+
+    <CardComponent CardDetails="@CardDetails" />
+
+    <div class="form-input">
+        <div class="input-container">
+            <label for="exampleFormControlInput1" class="form-label">Card Number</label>
+            <input maxlength="16" pattern="[0-9]" type="text" class="input-control" @bind="@CardDetails.CardNumber" @bind:event="oninput">
+        </div>
+        <div class="input-container">
+            <label for="exampleFormControlInput1" class="form-label">Card Name</label>
+            <input type="text" class="input-control" @bind="@CardDetails.CardName" @bind:event="oninput">
+        </div>
+        <div class="input-container">
+            <label for="exampleFormControlInput1" class="form-label">Expiration Date</label>
+            <input type="text" class="input-control" @bind="@CardDetails.Month" @bind:event="oninput">
+            <select name="year" @bind="CardDetails.Month">
+                <option disabled selected value="">Month</option>
+                @foreach (var month in Months)
+                {
+                    <option value="@month">@month</option>
+                }
+            </select>
+        </div>
+        <div class="input-container">
+            <select name="year" @bind="CardDetails.Year">
+                <option disabled selected value="">Year</option>
+                @foreach (var year in Years)
+                {
+                    <option value="@year">@year</option>
+                }
+            </select>
+        </div>
+        <div class="input-container">
+            <label for="exampleFormControlInput1" class="form-label">CVV address</label>
+            <input type="text" class="input-control" @bind="@CardDetails.Cvv" @bind:event="oninput">
+        </div>
+        <div class="input-container">
+            <button class="button">Submit</button>
+        </div>
     </div>
 </div>
 
 @code {
-    public CardDetails CardDetails { get; set; }
+    CardDetails? CardDetails { get; set; }
+    ElementReference _cardNumberInput;
+    int[] Years = Enumerable.Range(2019, 12).ToArray();
+
+    string[] Months = Enumerable.Range(1, 12)
+    .Select(month => month.ToString("D2"))
+    .ToArray();
 
     [Parameter]
-    public RenderFragment CardVisual { get; set; }
+    public RenderFragment? CardVisual { get; set; }
 
     protected override void OnInitialized()
     {

@@ -14,4 +14,15 @@ public class CardDetails
     public string Year { get; set; }
     [StringLength(4)]
     public string Cvv { get; set; }
+
+    public CardType CardType { get; set; }
+
+    
+}
+
+public enum CardType
+{
+    Visa = 1,
+    Master = 2,
+    Discover = 3
 }
