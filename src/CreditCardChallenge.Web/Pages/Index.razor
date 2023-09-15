@@ -17,16 +17,13 @@
         </div>
         <div class="input-container">
             <label for="exampleFormControlInput1" class="form-label">Expiration Date</label>
-            <input type="text" class="input-control" @bind="@CardDetails.Month" @bind:event="oninput">
-            <select name="year" @bind="CardDetails.Month">
+            <select name="month" @bind="CardDetails.Month">
                 <option disabled selected value="">Month</option>
                 @foreach (var month in Months)
                 {
                     <option value="@month">@month</option>
                 }
             </select>
-        </div>
-        <div class="input-container">
             <select name="year" @bind="CardDetails.Year">
                 <option disabled selected value="">Year</option>
                 @foreach (var year in Years)
