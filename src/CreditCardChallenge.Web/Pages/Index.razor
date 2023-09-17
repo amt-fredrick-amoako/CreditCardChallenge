@@ -1,62 +1,111 @@
 ﻿@page "/"
-@inject IJSRuntime JsRuntime
+@inject IJSRuntime JavaScript
+@inject HttpClient HttpClient
 
 
-<div class="form-container">
+<form method="post" class="form-container" @onsubmit="SubmitForm">
 
-    <CardComponent CardDetails="@CardDetails" />
+    <div class="cards @(isRotated ? "rotate" : "")">
+        <CardComponent CardDetails="@CardDetails" />
+    </div>
 
     <div class="form-input">
         <div class="input-container">
-            <label for="exampleFormControlInput1" class="form-label">Card Number</label>
-            <input maxlength="16" pattern="[0-9]" type="text" class="input-control" @bind="@CardDetails.CardNumber" @bind:event="oninput">
+            <label for="cardNumber" class="form-label">Card Number</label>
+            <input id="cardNumber" maxlength="16" type="text" class="input-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
         </div>
         <div class="input-container">
-            <label for="exampleFormControlInput1" class="form-label">Card Name</label>
-            <input type="text" class="input-control" @bind="@CardDetails.CardName" @bind:event="oninput">
+            <label for="cardName" class="form-label">Card Name</label>
+            <input id="cardName" type="text" class="input-control" @bind="@CardDetails.CardName" @bind:event="oninput" name="cardName">
         </div>
-        <div class="input-container">
-            <label for="exampleFormControlInput1" class="form-label">Expiration Date</label>
-            <select name="month" @bind="CardDetails.Month">
-                <option disabled selected value="">Month</option>
-                @foreach (var month in Months)
-                {
-                    <option value="@month">@month</option>
-                }
-            </select>
-            <select name="year" @bind="CardDetails.Year">
-                <option disabled selected value="">Year</option>
-                @foreach (var year in Years)
-                {
-                    <option value="@year">@year</option>
-                }
-            </select>
-        </div>
-        <div class="input-container">
-            <label for="exampleFormControlInput1" class="form-label">CVV address</label>
-            <input type="text" class="input-control" @bind="@CardDetails.Cvv" @bind:event="oninput">
+        <div class="security w-100 justify-content-between">
+            <div class="select-container w-75">
+                <label for="expiry" class="form-label">Expiration Date</label>
+                <select id="expiry" name="month" @bind="CardDetails.Month">
+                    <option disabled selected value="">Month</option>
+                    @foreach (var month in Months)
+                    {
+                        <option value="@month">@month</option>
+                    }
+                </select>
+                <select name="year" @bind="CardDetails.Year">
+                    <option disabled selected value="">Year</option>
+                    @foreach (var year in Years)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+            </div>
+            <div class="input-container">
+                <label for="cvv" class="form-label">CVV</label>
+                <input id="cvv" maxlength="4" type="text" class="cvv" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv" />
+            </div>
         </div>
         <div class="input-container">
             <button class="button">Submit</button>
         </div>
     </div>
-</div>
+</form>
 
 @code {
     CardDetails? CardDetails { get; set; }
-    ElementReference _cardNumberInput;
-    int[] Years = Enumerable.Range(2019, 12).ToArray();
 
-    string[] Months = Enumerable.Range(1, 12)
-    .Select(month => month.ToString("D2"))
-    .ToArray();
+    string[] Years { get; set; }
 
-    [Parameter]
-    public RenderFragment? CardVisual { get; set; }
+    string[] Months { get; set; }
+
+    private bool isRotated = false;
+
+    private void Rotate()
+    {
+        isRotated = true;
+    }
+
+    private void RotateBack()
+    {
+        isRotated = false;
+    }
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         CardDetails = new();
+
+        Months = Enumerable.Range(1, 12)
+        .Select(month => month.ToString("D2"))
+        .ToArray();
+
+        Years = Enumerable.Range(2019, 12)
+        .Select(year => year.ToString())
+        .ToArray();
+    }
+
+    // display message modal
+    async void ShowMessage(CardResponse message)
+    {
+        // string cleanedMessage = message.Replace("\n", "");
+
+        var messageParams = new
+        {
+            title = message.Message,
+            text = $"Name on Card: {message.CardName}, Card Number: {message.CardNumber}, Card Expiry {message.Month}/{message.Year}, CVV: {message.Cvv}",
+            icon = "success",
+            buttons = new
+            {
+                confirm = new { text = "Okay", value = true }
+            },
+            dangerMode = false
+        };
+
+        await JavaScript.InvokeAsync<bool>("swal", messageParams);
+    }
+
+    // makes a post request when form is submitted
+    async void SubmitForm()
+    {
+        var response = await HttpClient.PostAsJsonAsync($"https://localhost:7063/validate", CardDetails);
+        var message = await response.Content.ReadAsStringAsync();
+        var cardResponse = JsonConvert.DeserializeObject<CardResponse>(message);
+        ShowMessage(cardResponse);
     }
 }

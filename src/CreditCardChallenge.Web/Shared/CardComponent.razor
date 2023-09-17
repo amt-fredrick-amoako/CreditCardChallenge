@@ -1,4 +1,4 @@
-﻿<div class="cards">
+﻿
     <div class="card-container">
 
         <div class="card-header">
@@ -6,13 +6,18 @@
             <div class="sticker">
             </div>
             <div class="card-type">
-                <img src="assets/mastercard.png" alt="card type logo">
+                <img src="assets/@(GetCardType(CardDetails.CardNumber)).png" alt="card type logo">
             </div>
 
         </div>
 
         <div class="card-input">
-            <h5>@(CardDetails.CardNumber ?? "#### #### #### ####")</h5>
+
+            @for (int i = 0; i < 16; i++)
+            {
+                <span>@GetDisplayCharacter(i)</span>
+            }
+
         </div>
 
         <div class="card-footer">
@@ -35,54 +40,42 @@
         </div>
 
     </div>
-    <div class="card-container">
 
-        <div class="card-header">
+    <div class="card-container-back">
 
-            <div class="sticker">
+        <div class="black-strip mt-2"></div>
+
+        <div class="cvv-container">
+            <h5>CVV</h5>
+            <div class="cvv-input">
+                <h5 class="cvv-text mb">@(CardDetails.Cvv ?? "")</h5>
             </div>
-            <div class="card-type">
-                <img src="assets/mastercard.png" alt="card type logo">
-            </div>
-
         </div>
 
-        <div class="card-input">
-            @if (CardDetails.CardNumber is null)
-            {
-                <h5>#### #### #### ####</h5>
-            }
-            else
-            {
-                <h5>@FormatCardNumber(CardDetails.CardNumber)</h5>
-            }
-        </div>
-
-        <div class="card-footer">
-            <div class="card-name">
-                <h6>
-                    Card Holder
-                </h6>
-                <h5>
-                    @(CardDetails.CardName ?? " AD SOYAD")
-                </h5>
-            </div>
+        <div class="bottom-logo">
             <div class="card-expire">
-                <h6>
-                    Expires
-                </h6>
-                <h5>
-                    @(CardDetails.Month ?? "MM")/@(CardDetails.Year ?? "YY")
-                </h5>
+            <img src="/assets/@(GetCardType(CardDetails.CardNumber)).png" />
             </div>
         </div>
 
     </div>
-</div>
+
 
 @code {
     [Parameter]
     public CardDetails? CardDetails { get; set; }
+
+    private string GetDisplayCharacter(int index)
+    {
+        if (CardDetails != null && CardDetails.CardNumber != null && index < CardDetails.CardNumber.Length)
+        {
+            return CardDetails.CardNumber[index].ToString();
+        }
+        else
+        {
+            return "#";
+        }
+    }
 
     // Method to format the card number
     private string FormatCardNumber(string input)
@@ -98,5 +91,26 @@
         }
 
         return formatted;
+    }
+
+    public static string GetCardType(string cardNumber)
+    {
+        if (cardNumber is null)
+        {
+            return "visa";
+        }
+        // Remove any spaces and non-digit characters
+        string cleanCardNumber = new string(cardNumber.Where(char.IsDigit).ToArray());
+
+        // Take the first four digits
+        string firstFourDigits = cleanCardNumber.Length >= 4 ? cleanCardNumber.Substring(0, 4) : cleanCardNumber;
+
+        return firstFourDigits switch
+        {
+            var digits when digits.StartsWith("4") => "visa",
+            var digits when digits.StartsWith("5") && digits.Length == 4 => "masterCard",
+            var digits when digits == "6011" || digits == "65" => "discover",
+            _ => "visa"
+        };
     }
 }

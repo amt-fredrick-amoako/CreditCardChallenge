@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 600px;
+    height: 500px;
     width: 650px;
     background-color: #fff;
     margin: 150px auto;
@@ -12,38 +12,56 @@
     top: 50px;
 }
 
-.input-control{
+.input-control {
     border: solid 1px grey;
     border-radius: 5px;
     width: 550px;
+    height: 40px;
+    margin-bottom: 10px;
+}
+
+.cvv {
+    border: solid 1px grey;
+    border-radius: 5px;
+    width: 140px;
+    height: 40px;
 }
 
 .input-container {
     width: auto;
 }
 
+.select-container {
+    align-self: start;
+}
+
+select {
+    padding: 10px 0;
+    width: 155px;
+}
+
 .margin-top {
     margin-top: 1px;
 }
 
-label{
+label {
     display: block;
     align-self: flex-start;
     margin: 0;
     /*padding-top: 15px;*/
 }
 
-input{
+input {
     display: block;
     padding: 5px;
 }
 
 .form-input {
-    border: solid 2px black;
+    /*border: solid 2px black;*/
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 128px;
+    margin-top: 160px;
 }
 
 .button {
@@ -53,4 +71,24 @@ input{
     padding-bottom: 8px;
     background-color: #008CBA;
     border-radius: 5px;
+}
+
+.security {
+    display: flex;
+}
+
+.cards {
+    background-color: transparent;
+    position: absolute;
+    left: calc(50% - 250px);
+    width: 500px;
+    height: 300px;
+    top: -150px;
+    perspective: 1000px;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.rotate {
+    transform: rotateY(180deg);
 }
