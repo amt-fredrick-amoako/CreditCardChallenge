@@ -1,64 +1,68 @@
 ﻿
-    <div class="card-container">
+<div class="card-container">
 
-        <div class="card-top">
+    <div class="card-top">
 
-            <div class="sticker">
-            </div>
-            <div class="card-type">
-                <img src="assets/@(GetCardType(CardDetails.CardNumber)).png" alt="card type logo">
-            </div>
-
+        <div class="sticker">
+        </div>
+        <div class="card-type">
+            <img src="assets/visa.png" alt="visa card type logo" style="margin-bottom: 40px; @(GetCardType(CardDetails.CardNumber))">
+            <img src="assets/mastercard.png" alt="master card type logo" style="@(GetCardType(CardDetails.CardNumber))">
+            <img src="assets/discover.png" alt="discover card type logo" style="@(GetCardType(CardDetails.CardNumber))">
         </div>
 
-        <div class="card-input">
+    </div>
 
-            @for (int i = 0; i < 16; i++)
-            {
-                <span>@GetDisplayCharacter(i)</span>
-            }
+    <div class="card-input">
 
+        @for (int i = 0; i < 16; i++)
+        {
+            <span>@GetDisplayCharacter(i)</span>
+        }
+
+    </div>
+
+    <div class="card-bottom">
+        <div class="card-name">
+            <h6>
+                Card Holder
+            </h6>
+            <h5>
+                @(CardDetails.CardName ?? " AD SOYAD")
+            </h5>
         </div>
-
-        <div class="card-bottom">
-            <div class="card-name">
-                <h6>
-                    Card Holder
-                </h6>
-                <h5>
-                    @(CardDetails.CardName ?? " AD SOYAD")
-                </h5>
-            </div>
-            <div class="card-expire">
-                <h6>
-                    Expires
-                </h6>
-                <h5>
+        <div class="card-expire">
+            <h6>
+                Expires
+            </h6>
+            <h5>
                 @(CardDetails.Month ?? "MM")/@(GetYear(CardDetails.Year))
-                </h5>
-            </div>
+            </h5>
         </div>
-
     </div>
 
-    <div class="card-container-back">
+</div>
 
-        <div class="black-strip mt-2"></div>
+<div class="card-container-back">
 
-        <div class="cvv-container">
-            <h5>CVV</h5>
-            <div class="cvv-input">
-                <h5 class="cvv-text mb">@(CardDetails.Cvv ?? "")</h5>
-            </div>
+    <div class="black-strip mt-2"></div>
+
+    <div class="cvv-container">
+        <h5>CVV</h5>
+        <div class="cvv-input">
+            <h5 class="cvv-text mb">@(CardDetails.Cvv ?? "")</h5>
         </div>
-
-        <div class="bottom-logo">
-            <div class="card-expire">
-            <img src="/assets/@(GetCardType(CardDetails.CardNumber)).png" />
-            </div>
-        </div>
-
     </div>
+
+    <div class="bottom-logo">
+        <div class="card-expire card-type">
+            <img src="assets/visa.png" alt="visa card type logo" style="margin-bottom: 40px; @(GetCardType(CardDetails.CardNumber))">
+            <img src="assets/mastercard.png" alt="master card type logo" style="@(GetCardType(CardDetails.CardNumber))">
+            <img src="assets/discover.png" alt="discover card type logo" style="@(GetCardType(CardDetails.CardNumber))">
+        </div>
+    </div>
+
+</div>
 
 
 @code {
@@ -117,10 +121,10 @@
 
         return firstFourDigits switch
         {
-            var digits when digits.StartsWith("4") => "visa",
-            var digits when digits.StartsWith("5") && digits.Length == 4 => "masterCard",
-            var digits when digits == "6011" || digits == "65" => "discover",
-            _ => "visa"
+            var digits when digits.StartsWith("4") => "transform: translateY(0);",
+            var digits when digits.StartsWith("5") && digits.Length == 4 => "transform: translateY(-130%);",
+            var digits when digits == "6011" || digits == "65" => "transform: translateY(-910%);",
+            _ => "transform: translateY(0);"
         };
     }
 }

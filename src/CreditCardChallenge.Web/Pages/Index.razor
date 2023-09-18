@@ -1,7 +1,7 @@
 ﻿@page "/"
-@using FluentValidation.Results;
 @inject IJSRuntime JavaScript
 @inject HttpClient HttpClient
+@inject CardDetailsValidator CardDetailsValidator
 
 
 <form method="post" class="form-container" @onsubmit="SubmitForm">
@@ -13,7 +13,7 @@
     <div class="form-input">
         <div class="input-container w-100">
             <label for="cardNumber" class="form-label">Card Number</label>
-            <input id="cardNumber" maxlength="16" type="text" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
+            <input id="cardNumber" maxlength="16" type="number" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
             <span class="validation-message">
                 @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardNumber))?.ErrorMessage)
             </span>
@@ -32,7 +32,7 @@
                     <option disabled selected value="">Month</option>
                     @foreach (var month in Months)
                     {
-                        <option value="@month">@month</option>
+                                <option value="@month">@month</option>
                     }
                 </select>
                 @* <span class="validation-message">
@@ -42,7 +42,7 @@
                     <option disabled selected value="">Year</option>
                     @foreach (var year in Years)
                     {
-                        <option value="@year">@year</option>
+                                <option value="@year">@year</option>
                     }
                 </select>
                 @* <span class="validation-message">
@@ -51,7 +51,7 @@
             </div>
             <div class="input-container">
                 <label for="cvv" class="form-label">CVV</label>
-                <input id="cvv" maxlength="4" type="text" class="cvv form-control" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv" />
+                <input id="cvv" maxlength="4" type="number" class="cvv form-control" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv" />
                 <span class="validation-message">
                     @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Cvv))?.ErrorMessage)
                 </span>
@@ -72,16 +72,14 @@
 
     bool isRotated = false;
 
-    CardDetailsValidator validator;
-
     ValidationResult validationErrors;
 
-    private void Rotate()
+    void Rotate()
     {
         isRotated = true;
     }
 
-    private void RotateBack()
+    void RotateBack()
     {
         isRotated = false;
     }
@@ -99,17 +97,16 @@
         .Select(year => year.ToString())
         .ToArray();
 
-        validator = new CardDetailsValidator();
     }
 
     // display message modal
-    async void ShowMessage(CardResponse message)
+    async void ShowMessage(CardResponse response)
     {
 
         var messageParams = new
         {
-            title = message.Message,
-            text = $"Name on Card: {message.CardName}, Card Number: {message.CardNumber}, Card Expiry {message.Month}/{message.Year}, CVV: {message.Cvv}",
+            title = response.Message,
+            text = $"Name on Card: {response.CardName}, Card Number: {response.CardNumber}, Card Expiry {response.Month}/{response.Year}, CVV: {response.Cvv}",
             icon = "success",
             buttons = new
             {
@@ -125,7 +122,7 @@
     async void SubmitForm()
     {
         // perform model validations using fluent validator
-        validationErrors = validator.Validate(CardDetails);
+        validationErrors = CardDetailsValidator.Validate(CardDetails);
 
         if (validationErrors.IsValid)
         {
