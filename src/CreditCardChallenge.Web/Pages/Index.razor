@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using FluentValidation.Results;
 @inject IJSRuntime JavaScript
 @inject HttpClient HttpClient
 
@@ -10,39 +11,54 @@
     </div>
 
     <div class="form-input">
-        <div class="input-container">
+        <div class="input-container w-100">
             <label for="cardNumber" class="form-label">Card Number</label>
-            <input id="cardNumber" maxlength="16" type="text" class="input-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
+            <input id="cardNumber" maxlength="16" type="text" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
+            <span class="validation-message">
+                @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardNumber))?.ErrorMessage)
+            </span>
         </div>
-        <div class="input-container">
+        <div class="input-container w-100">
             <label for="cardName" class="form-label">Card Name</label>
-            <input id="cardName" type="text" class="input-control" @bind="@CardDetails.CardName" @bind:event="oninput" name="cardName">
+            <input id="cardName" type="text" class="form-control" @bind="@CardDetails.CardName" @bind:event="oninput" name="cardName">
+            <span class="validation-message">
+                @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardName))?.ErrorMessage)
+            </span>
         </div>
         <div class="security w-100 justify-content-between">
             <div class="select-container w-75">
                 <label for="expiry" class="form-label">Expiration Date</label>
-                <select id="expiry" name="month" @bind="CardDetails.Month">
+                <select id="expiry" name="month" @bind="CardDetails.Month" class="mr-20 form-select d-inline">
                     <option disabled selected value="">Month</option>
                     @foreach (var month in Months)
                     {
                         <option value="@month">@month</option>
                     }
                 </select>
-                <select name="year" @bind="CardDetails.Year">
+                @* <span class="validation-message">
+                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Month))?.ErrorMessage)
+                </span> *@
+                <select name="year" @bind="CardDetails.Year" class="form-select d-inline">
                     <option disabled selected value="">Year</option>
                     @foreach (var year in Years)
                     {
                         <option value="@year">@year</option>
                     }
                 </select>
+                @* <span class="validation-message">
+                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Year))?.ErrorMessage)
+                </span> *@
             </div>
             <div class="input-container">
                 <label for="cvv" class="form-label">CVV</label>
-                <input id="cvv" maxlength="4" type="text" class="cvv" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv" />
+                <input id="cvv" maxlength="4" type="text" class="cvv form-control" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv" />
+                <span class="validation-message">
+                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Cvv))?.ErrorMessage)
+                </span>
             </div>
         </div>
         <div class="input-container">
-            <button class="button">Submit</button>
+            <button class="btn btn-primary button">Submit</button>
         </div>
     </div>
 </form>
@@ -54,7 +70,8 @@
 
     string[] Months { get; set; }
 
-    private bool isRotated = false;
+    bool isRotated = false;
+    ValidationResult validationErrors;
 
     private void Rotate()
     {
@@ -102,9 +119,23 @@
     // makes a post request when form is submitted
     async void SubmitForm()
     {
-        var response = await HttpClient.PostAsJsonAsync($"https://localhost:7063/validate", CardDetails);
-        var message = await response.Content.ReadAsStringAsync();
-        var cardResponse = JsonConvert.DeserializeObject<CardResponse>(message);
-        ShowMessage(cardResponse);
+        // perform model validations using fluent validator
+        var validator = new CardDetailsValidator();
+        validationErrors = validator.Validate(CardDetails);
+
+        if (validationErrors.IsValid)
+        {
+            var response = await HttpClient.PostAsJsonAsync($"https://localhost:7063/validate", CardDetails);
+            var message = await response.Content.ReadAsStringAsync();
+            var cardResponse = JsonConvert.DeserializeObject<CardResponse>(message);
+            ShowMessage(cardResponse);
+        }
+        else
+        {
+            foreach (var error in validationErrors.Errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
+        }
     }
 }

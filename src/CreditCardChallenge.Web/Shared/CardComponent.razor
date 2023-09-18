@@ -1,7 +1,7 @@
 ﻿
     <div class="card-container">
 
-        <div class="card-header">
+        <div class="card-top">
 
             <div class="sticker">
             </div>
@@ -20,7 +20,7 @@
 
         </div>
 
-        <div class="card-footer">
+        <div class="card-bottom">
             <div class="card-name">
                 <h6>
                     Card Holder
@@ -34,7 +34,7 @@
                     Expires
                 </h6>
                 <h5>
-                    @(CardDetails.Month ?? "MM")/@(CardDetails.Year ?? "YY")
+                @(CardDetails.Month ?? "MM")/@(GetYear(CardDetails.Year))
                 </h5>
             </div>
         </div>
@@ -91,6 +91,16 @@
         }
 
         return formatted;
+    }
+
+    string GetYear(string year)
+    {
+        if (string.IsNullOrEmpty(year))
+        {
+            return "YY";
+        }
+
+        return year.Substring(2);
     }
 
     public static string GetCardType(string cardNumber)

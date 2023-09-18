@@ -50,12 +50,13 @@
     transform: rotateY(180deg);
 }
 
-.card-header {
+.card-top {
     display: flex;
-    width: 100%;
+    width: 95%;
     height: 100px;
     margin: 0 auto;
     justify-content: space-between;
+    align-items: center;
 }
 
 .card-input {
@@ -67,13 +68,13 @@
     align-items: center;
 }
 
-.card-footer {
+.card-bottom {
     display: flex;
-    width: 100%;
+    width: 95%;
     height: 100px;
     margin: 0 auto;
     justify-content: space-between;
-    align-items: center
+    align-items: center;
 }
 
 .card-input {
@@ -84,7 +85,8 @@
     width: 80px;
     height: 80px;
     background-image: url("assets/sticker.png");
-    background-size: cover;
+    background-size: contain;
+    background-repeat: no-repeat;
 }
 
 img {
@@ -94,10 +96,17 @@ img {
 
 h5, h6, span {
     color: #fff;
+    margin: 0;
 }
 
 span {
     font-size: 30px;
+}
+
+
+img {
+    width: 85px;
+    height: 60px;
 }
 
 .black-strip {
