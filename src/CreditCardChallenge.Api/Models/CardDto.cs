@@ -4,6 +4,8 @@ namespace CreditCardChallenge.Api.Models
 {
     public class CardDto
     {
+        [Required]
+        [CreditCard]
         public string CardNumber { get; set; }
 
         [Required]

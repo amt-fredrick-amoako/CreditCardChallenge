@@ -38,30 +38,43 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
-app.MapPost("/validate", async (HttpContext _, CardDto cardDto, HttpClient httpClient, ICardRepository cardRepository) =>
+app.MapPost("/validate", async (HttpContext context, CardDto cardDto, HttpClient httpClient, ICardRepository cardRepository) =>
 {
-    // make validation request to external api
-    var response = await httpClient.GetAsync($"https://hq-challenge.free.beeceptor.com/validate/creditcard/{cardDto.CardNumber}");
-    // read response message from response
-    var message = await response.Content.ReadAsStringAsync();
-
-    // convert dto to card details
-    var card = cardDto.ToCardDetails();
-    card.Id = Guid.NewGuid();
-    // add card to backing store
-    var cardDetails = await cardRepository.AddCard(card);
-
-    // return added card and message from external api
-    return Results.Ok(new CardResponse
+    try
     {
-        CardName = cardDetails.CardName,
-        CardNumber = cardDetails.CardNumber,
-        Cvv = cardDetails.Cvv,
-        Month = cardDetails.Month,
-        Year = cardDetails.Year,
-        CardType = cardDetails.CardType,
-        Message = message
-    });
+        // make validation request to external api
+        var response =
+            await httpClient.GetAsync(
+                $"https://hq-challenge.free.beeceptor.com/validate/creditcard/{cardDto.CardNumber}");
+        
+        // read response message from response
+        var message = await response.Content.ReadAsStringAsync();
+
+        // convert dto to card details
+        var card = cardDto.ToCardDetails();
+        
+        card.Id = Guid.NewGuid();
+        
+        // add card to backing store
+        var cardDetails = await cardRepository.AddCard(card);
+
+        // return added card and message from external api
+        return Results.Ok(new CardResponse
+        {
+            CardName = cardDetails.CardName,
+            CardNumber = cardDetails.CardNumber,
+            Cvv = cardDetails.Cvv,
+            Month = cardDetails.Month,
+            Year = cardDetails.Year,
+            CardType = cardDetails.CardType,
+            Message = message
+        });
+    }
+    catch (Exception e)
+    {
+        return Results.Problem("failed to save card details due to an unforeseen issue, please try again later",
+            context.Request.Path, StatusCodes.Status500InternalServerError);
+    }
 
 }).WithName("ValidateCard")
 .WithOpenApi();
