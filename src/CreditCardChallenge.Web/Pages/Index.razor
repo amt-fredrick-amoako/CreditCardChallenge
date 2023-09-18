@@ -71,6 +71,9 @@
     string[] Months { get; set; }
 
     bool isRotated = false;
+
+    CardDetailsValidator validator;
+
     ValidationResult validationErrors;
 
     private void Rotate()
@@ -95,6 +98,8 @@
         Years = Enumerable.Range(2019, 12)
         .Select(year => year.ToString())
         .ToArray();
+
+        validator = new CardDetailsValidator();
     }
 
     // display message modal
@@ -120,7 +125,6 @@
     async void SubmitForm()
     {
         // perform model validations using fluent validator
-        var validator = new CardDetailsValidator();
         validationErrors = validator.Validate(CardDetails);
 
         if (validationErrors.IsValid)

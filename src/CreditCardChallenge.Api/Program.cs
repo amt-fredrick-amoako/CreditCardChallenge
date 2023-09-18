@@ -72,7 +72,7 @@ app.MapPost("/validate", async (HttpContext context, CardDto cardDto, HttpClient
     }
     catch (Exception e)
     {
-        return Results.Problem("failed to save card details due to an unforeseen issue, please try again later",
+        return Results.Problem(e.Message,
             context.Request.Path, StatusCodes.Status500InternalServerError);
     }
 
