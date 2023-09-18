@@ -1,0 +1,145 @@
+﻿.card-container {
+    border-radius: 15px;
+    background-image: url("assets/background.jpg");
+    background-size: cover;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin: auto;
+    box-shadow: 3px 26px 20px 20px #00000021;
+}
+
+.card-container-back {
+    border-radius: 15px;
+    background-image: url("assets/background.jpg");
+    background-size: cover;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
+    margin: auto;
+    box-shadow: 3px 26px 20px 20px #00000021;
+}
+
+/*.cards:hover {
+    
+}*/
+
+.card-container, .card-container-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
+}
+
+/* Style the back side */
+.card-container-back {
+    transform: rotateY(180deg);
+}
+
+.rotate {
+    perspective: 1000px;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    transform: rotateY(180deg);
+}
+
+.card-top {
+    display: flex;
+    width: 95%;
+    height: 100px;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-input {
+    width: 90%;
+    height: 50px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-bottom {
+    display: flex;
+    width: 95%;
+    height: 100px;
+    margin: 0 auto;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-input {
+    text-align: center;
+}
+
+.sticker {
+    width: 80px;
+    height: 80px;
+    background-image: url("assets/sticker.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+img {
+    width: 80px;
+    height: 80px;
+}
+
+h5, h6, span {
+    color: #fff;
+    margin: 0;
+}
+
+span {
+    font-size: 30px;
+}
+
+
+img {
+    width: 85px;
+    height: 60px;
+}
+
+.black-strip {
+    width: 100%;
+    height: 70px;
+    background-color: black;
+}
+
+.cvv-input {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.cvv-container {
+    width: 95%;
+    margin: 0 auto;
+    text-align: right;
+}
+
+.cvv-text {
+    color: black;
+}
+
+.bottom-logo {
+    display: flex;
+    width: 95%;
+    height: 100px;
+    margin: 0 auto;
+    justify-content: end;
+    align-items: center;
+}

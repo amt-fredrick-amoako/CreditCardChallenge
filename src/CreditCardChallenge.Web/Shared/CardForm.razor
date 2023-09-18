@@ -1,0 +1,11 @@
+﻿@CardVisual
+<form>
+    <input type="text" @bind-value="@CardName">
+</form>
+
+@code{
+    [Parameter]
+    public string CardName { get; set; }
+    [Parameter]
+    public RenderFragment CardVisual { get; set; }
+}

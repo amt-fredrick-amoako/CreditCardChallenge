@@ -1,9 +1,145 @@
 ﻿@page "/"
+@using FluentValidation.Results;
+@inject IJSRuntime JavaScript
+@inject HttpClient HttpClient
 
-<PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<form method="post" class="form-container" @onsubmit="SubmitForm">
 
-Welcome to your new app.
+    <div class="cards @(isRotated ? "rotate" : "")">
+        <CardComponent CardDetails="@CardDetails" />
+    </div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <div class="form-input">
+        <div class="input-container w-100">
+            <label for="cardNumber" class="form-label">Card Number</label>
+            <input id="cardNumber" maxlength="16" type="text" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
+            <span class="validation-message">
+                @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardNumber))?.ErrorMessage)
+            </span>
+        </div>
+        <div class="input-container w-100">
+            <label for="cardName" class="form-label">Card Name</label>
+            <input id="cardName" type="text" class="form-control" @bind="@CardDetails.CardName" @bind:event="oninput" name="cardName">
+            <span class="validation-message">
+                @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardName))?.ErrorMessage)
+            </span>
+        </div>
+        <div class="security w-100 justify-content-between">
+            <div class="select-container w-75">
+                <label for="expiry" class="form-label">Expiration Date</label>
+                <select id="expiry" name="month" @bind="CardDetails.Month" class="mr-20 form-select d-inline">
+                    <option disabled selected value="">Month</option>
+                    @foreach (var month in Months)
+                    {
+                        <option value="@month">@month</option>
+                    }
+                </select>
+                @* <span class="validation-message">
+                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Month))?.ErrorMessage)
+                </span> *@
+                <select name="year" @bind="CardDetails.Year" class="form-select d-inline">
+                    <option disabled selected value="">Year</option>
+                    @foreach (var year in Years)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+                @* <span class="validation-message">
+                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Year))?.ErrorMessage)
+                </span> *@
+            </div>
+            <div class="input-container">
+                <label for="cvv" class="form-label">CVV</label>
+                <input id="cvv" maxlength="4" type="text" class="cvv form-control" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv" />
+                <span class="validation-message">
+                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Cvv))?.ErrorMessage)
+                </span>
+            </div>
+        </div>
+        <div class="input-container">
+            <button class="btn btn-primary button">Submit</button>
+        </div>
+    </div>
+</form>
+
+@code {
+    CardDetails? CardDetails { get; set; }
+
+    string[] Years { get; set; }
+
+    string[] Months { get; set; }
+
+    bool isRotated = false;
+
+    CardDetailsValidator validator;
+
+    ValidationResult validationErrors;
+
+    private void Rotate()
+    {
+        isRotated = true;
+    }
+
+    private void RotateBack()
+    {
+        isRotated = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        CardDetails = new();
+
+        Months = Enumerable.Range(1, 12)
+        .Select(month => month.ToString("D2"))
+        .ToArray();
+
+        Years = Enumerable.Range(2019, 12)
+        .Select(year => year.ToString())
+        .ToArray();
+
+        validator = new CardDetailsValidator();
+    }
+
+    // display message modal
+    async void ShowMessage(CardResponse message)
+    {
+
+        var messageParams = new
+        {
+            title = message.Message,
+            text = $"Name on Card: {message.CardName}, Card Number: {message.CardNumber}, Card Expiry {message.Month}/{message.Year}, CVV: {message.Cvv}",
+            icon = "success",
+            buttons = new
+            {
+                confirm = new { text = "Okay", value = true }
+            },
+            dangerMode = false
+        };
+
+        await JavaScript.InvokeAsync<bool>("swal", messageParams);
+    }
+
+    // makes a post request when form is submitted
+    async void SubmitForm()
+    {
+        // perform model validations using fluent validator
+        validationErrors = validator.Validate(CardDetails);
+
+        if (validationErrors.IsValid)
+        {
+            var response = await HttpClient.PostAsJsonAsync($"https://localhost:7063/validate", CardDetails);
+            var message = await response.Content.ReadAsStringAsync();
+            var cardResponse = JsonConvert.DeserializeObject<CardResponse>(message);
+            ShowMessage(cardResponse);
+        }
+        else
+        {
+            foreach (var error in validationErrors.Errors)
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
+        }
+    }
+}
