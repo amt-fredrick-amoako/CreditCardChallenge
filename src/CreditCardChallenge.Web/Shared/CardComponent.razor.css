@@ -81,6 +81,24 @@
     text-align: center;
 }
 
+.card-type {
+    width: 100px;
+    height: 70px;
+    overflow: hidden;
+}
+
+    .card-type > img {
+        margin: 0 10px;
+        height: auto;
+        transform: translateY(0);
+        transition: all .2s;
+        /*opacity: 0.1*/
+    }
+
+.opacity-in{
+    opacity: 1
+}
+
 .sticker {
     width: 80px;
     height: 80px;

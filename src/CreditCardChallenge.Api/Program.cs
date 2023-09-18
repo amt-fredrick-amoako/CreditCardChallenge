@@ -1,6 +1,8 @@
 using CreditCardChallenge.Api.Data;
 using CreditCardChallenge.Api.Models;
 using CreditCardChallenge.Api.Repository;
+using CreditCardChallenge.Api.Validators;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +26,7 @@ builder.Services.AddCors(options =>
         policyBuilder.WithMethods("GET", "POST");
     });
 });
+builder.Services.AddValidatorsFromAssemblyContaining<CardDtoValidator>(ServiceLifetime.Transient);
 
 var app = builder.Build();
 
@@ -38,25 +41,26 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
-app.MapPost("/validate", async (HttpContext context, CardDto cardDto, HttpClient httpClient, ICardRepository cardRepository) =>
+// Card validation endpoint
+app.MapPost("/validate", async ([AsParameters] CardValidationRequest request) =>
 {
     try
     {
         // make validation request to external api
         var response =
-            await httpClient.GetAsync(
-                $"https://hq-challenge.free.beeceptor.com/validate/creditcard/{cardDto.CardNumber}");
-        
+            await request.httpClient.GetAsync(
+                $"https://hq-challenge.free.beeceptor.com/validate/creditcard/{request.cardDto.CardNumber}");
+
         // read response message from response
         var message = await response.Content.ReadAsStringAsync();
 
         // convert dto to card details
-        var card = cardDto.ToCardDetails();
-        
+        var card = request.cardDto.ToCardDetails();
+
         card.Id = Guid.NewGuid();
-        
+
         // add card to backing store
-        var cardDetails = await cardRepository.AddCard(card);
+        var cardDetails = await request.cardRepository.AddCard(card);
 
         // return added card and message from external api
         return Results.Ok(new CardResponse
@@ -73,10 +77,22 @@ app.MapPost("/validate", async (HttpContext context, CardDto cardDto, HttpClient
     catch (Exception e)
     {
         return Results.Problem(e.Message,
-            context.Request.Path, StatusCodes.Status500InternalServerError);
+            request.context.Request.Path, StatusCodes.Status500InternalServerError);
     }
 
 }).WithName("ValidateCard")
 .WithOpenApi();
 
 app.Run();
+
+/// <summary>
+/// Endpoint Parameters
+/// </summary>
+/// <param name="context"></param>
+/// <param name="cardDto"></param>
+/// <param name="httpClient"></param>
+/// <param name="cardRepository"></param>
+record CardValidationRequest(HttpContext context,
+                             CardDto cardDto,
+                             HttpClient httpClient,
+                             ICardRepository cardRepository);

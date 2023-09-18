@@ -1,6 +1,7 @@
-﻿using FluentValidation;
+﻿using CreditCardChallenge.Api.Models;
+using FluentValidation;
 
-namespace CreditCardChallenge.Api.Models;
+namespace CreditCardChallenge.Api.Validators;
 
 public class CardDtoValidator : AbstractValidator<CardDto>
 {
