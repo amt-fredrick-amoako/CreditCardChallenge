@@ -7,20 +7,23 @@
 <form method="post" class="form-container" @onsubmit="SubmitForm">
 
     <div class="cards @(isRotated ? "rotate" : "")">
-        <CardComponent CardDetails="@CardDetails" />
+        <CardComponent CardDetails="@CardDetails" MonthExpiry="@MonthExpiry" YearExpiry="@YearExpiry" YearValueExpiry="@YearValueExpiry" MonthValueExpiry="@MonthValueExpiry"/>
     </div>
 
     <div class="form-input">
         <div class="input-container w-100">
             <label for="cardNumber" class="form-label">Card Number</label>
-            <input id="cardNumber" maxlength="16" type="number" class="form-control" @bind="@CardDetails.CardNumber" @bind:event="oninput" name="cardNumber">
+            <input @attributes="@CardNumberAttributes"
+            @oninput="args => HandleNumberInput(args)"
+                   name="cardNumber" value="@CardDetails.CardNumber">
             <span class="validation-message">
                 @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardNumber))?.ErrorMessage)
             </span>
         </div>
         <div class="input-container w-100">
             <label for="cardName" class="form-label">Card Name</label>
-            <input id="cardName" type="text" class="form-control" @bind="@CardDetails.CardName" @bind:event="oninput" name="cardName">
+            <input @attributes="@CardNameAttributes"
+            @oninput="args => HandleNameInput(args)" name="cardName" value="@CardDetails.CardName">
             <span class="validation-message">
                 @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardName))?.ErrorMessage)
             </span>
@@ -28,26 +31,22 @@
         <div class="security w-100 justify-content-between">
             <div class="select-container w-75">
                 <label for="expiry" class="form-label">Expiration Date</label>
-                <select id="expiry" name="month" @bind="CardDetails.Month" class="mr-20 form-select d-inline">
+                <select @onchange="args => HandleMonthChange(args)" id="expiry" name="month" class="mr-20 form-select d-inline">
                     <option disabled selected value="">Month</option>
                     @foreach (var month in Months)
                     {
-                                <option value="@month">@month</option>
+                        <option value="@month">@month</option>
                     }
                 </select>
-                @* <span class="validation-message">
-                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Month))?.ErrorMessage)
-                </span> *@
-                <select name="year" @bind="CardDetails.Year" class="form-select d-inline">
+
+                <select @onchange="args => HandleYearChange(args)" name="year" class="form-select d-inline">
                     <option disabled selected value="">Year</option>
                     @foreach (var year in Years)
                     {
-                                <option value="@year">@year</option>
+                        <option value="@year">@year</option>
                     }
                 </select>
-                @* <span class="validation-message">
-                    @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Year))?.ErrorMessage)
-                </span> *@
+
             </div>
             <div class="input-container">
                 <label for="cvv" class="form-label">CVV</label>
@@ -66,6 +65,22 @@
 @code {
     CardDetails? CardDetails { get; set; }
 
+    Dictionary<string, object> CardNumberAttributes { get; set; } = new()
+    {
+        {"id", "cardNumber"},
+        {"maxlength", "16"},
+        {"type", "number"},
+        {"format", "^[0-9]{16}$"},
+        {"class", "form-control"}
+    };
+
+    Dictionary<string, object> CardNameAttributes { get; set; } = new()
+    {
+        {"id", "cardName"},
+        {"type", "text"},
+        {"class", "form-control"}
+    };
+
     string[] Years { get; set; }
 
     string[] Months { get; set; }
@@ -73,6 +88,11 @@
     bool isRotated = false;
 
     ValidationResult validationErrors;
+
+    string MonthExpiry { get; set; } = string.Empty;
+    string YearExpiry { get; set; } = string.Empty;
+    string MonthValueExpiry { get; set; } = string.Empty;
+    string YearValueExpiry { get; set; } = string.Empty;
 
     void Rotate()
     {
@@ -138,5 +158,28 @@
                 Console.WriteLine(error.ErrorMessage);
             }
         }
+    }
+
+    private void ChangeExpiryClass()
+    {
+        MonthExpiry = "text-expires";
+    }
+
+    void HandleNameInput(ChangeEventArgs args) => CardDetails.CardName = args.Value as string;
+
+    void HandleNumberInput(ChangeEventArgs args) => CardDetails.CardNumber = args.Value as string;
+
+    void HandleMonthChange(ChangeEventArgs args)
+    {
+        CardDetails.Month = args.Value as string;
+        MonthExpiry = "swipe-up";
+        MonthValueExpiry = "swipe-value-up";
+    }
+
+    void HandleYearChange(ChangeEventArgs args)
+    {
+        CardDetails.Year = args.Value as string;
+        YearExpiry = "swipe-up";
+        YearValueExpiry = "swipe-value-up";
     }
 }

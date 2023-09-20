@@ -17,27 +17,45 @@
 
         @for (int i = 0; i < 16; i++)
         {
-            <span>@GetDisplayCharacter(i)</span>
+            <span class="font-monospace" style="font-size: 30px;">@GetDisplayCharacter(i)</span>
         }
 
     </div>
 
     <div class="card-bottom">
         <div class="card-name">
-            <h6>
+            <h6 class="font-monospace">
                 Card Holder
             </h6>
-            <h5>
+            <h5 class="font-monospace">
                 @(CardDetails.CardName ?? " AD SOYAD")
             </h5>
         </div>
         <div class="card-expire">
-            <h6>
+            <h6 class="font-monospace">
                 Expires
             </h6>
-            <h5>
-                @(CardDetails.Month ?? "MM")/@(GetYear(CardDetails.Year))
-            </h5>
+            <div class="expires">
+                <div class="d-flex justify-content-evenly">
+                    <div class="@MonthExpiry text-white">
+                        <h5 class="font-monospace">MM</h5>
+                    </div>
+                    <div class="text-white">/</div>
+                    <div class="@YearExpiry text-white">
+                        <h5 class="font-monospace">YY</h5>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-evenly">
+                    <div class="@MonthValueExpiry text-white">
+                        <h5>@(CardDetails.Month ?? "MM")</h5>
+                    </div>
+                    <div>/</div>
+                    <div class="@YearValueExpiry text-white">
+                        <h5>@(GetYear(CardDetails.Year))</h5>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -69,17 +87,38 @@
     [Parameter]
     public CardDetails? CardDetails { get; set; }
 
+    [Parameter]
+    public string MonthExpiry { get; set; }
+
+    [Parameter]
+    public string YearExpiry { get; set; }
+
+    [Parameter]
+    public string MonthValueExpiry { get; set; } = string.Empty;
+
+    [Parameter]
+    public string YearValueExpiry { get; set; } = string.Empty;
+
     private string GetDisplayCharacter(int index)
     {
         if (CardDetails != null && CardDetails.CardNumber != null && index < CardDetails.CardNumber.Length)
         {
-            return CardDetails.CardNumber[index].ToString();
+            if ((index + 1) % 4 == 0 && index != CardDetails.CardNumber.Length - 1)
+            {
+                return FormatCardNumber(CardDetails.CardNumber[index].ToString()) + " ";
+            }
+            else
+            {
+                return FormatCardNumber(CardDetails.CardNumber[index].ToString());
+            }
         }
         else
         {
             return "#";
         }
     }
+
+
 
     // Method to format the card number
     private string FormatCardNumber(string input)
