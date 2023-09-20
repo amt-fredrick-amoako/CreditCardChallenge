@@ -52,34 +52,35 @@
 
 .card-top {
     display: flex;
-    width: 95%;
+    width: 90%;
     height: 100px;
     margin: 0 auto;
+    align-items: flex-end;
     justify-content: space-between;
-    align-items: center;
 }
 
 .card-input {
-    width: 90%;
+    width: 85%;
     height: 50px;
     margin: 0 auto;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    /*border: solid 2px white;
+    border-radius: 5px;*/
+    margin-left: 27px;
+    padding: 15px;
 }
 
 .card-bottom {
     display: flex;
-    width: 95%;
+    width: 90%;
     height: 100px;
     margin: 0 auto;
     justify-content: space-between;
     align-items: center;
 }
 
-.card-input {
-    text-align: center;
-}
 
 .card-type {
     width: 100px;
@@ -118,7 +119,7 @@ h5, h6, span {
 }
 
 span {
-    font-size: 30px;
+    font-size: 16px;
 }
 
 
@@ -161,3 +162,52 @@ img {
     justify-content: end;
     align-items: center;
 }
+
+.expires {
+    width: 66px;
+    height: 24px;
+    overflow: hidden;
+}
+
+.text-expires {
+    font-size: 1.25rem;
+}
+
+.sample {
+    margin: 0 10px;
+    height: auto;
+    
+}
+
+.swipe-up {
+    transform: translateY(-80%);
+    transition: all .2s;
+    /*transform: translateY(-80%);
+    transition: all .2s;*/
+}
+.swipe-value-up {
+    transform: translateY(-100%);
+    transition: all .2s;
+    /*transform: translateY(-80%);
+    transition: all .2s;*/
+}
+/*-----------------------------------------------------------------------------------------------------*/
+
+#here > div > span > span {
+        display: block;
+        transform: translateY(0);
+        animation: move 0.2s linear;
+      }
+
+      @keyframes move {
+        from {
+          transform: translateY(20px);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+
+      * {
+        transition: all 0.2s;
+      }
