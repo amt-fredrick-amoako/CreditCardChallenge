@@ -193,7 +193,7 @@ img {
 }
 /*-----------------------------------------------------------------------------------------------------*/
 
-#here > div > span > span {
+/*#here > div > span > span {
         display: block;
         transform: translateY(0);
         animation: move 0.2s linear;
@@ -210,4 +210,40 @@ img {
 
       * {
         transition: all 0.2s;
-      }
+      }*/
+
+/*Animation*/
+.field-focus {
+    /*position: absolute;*/
+    left: 0px;
+    top: 0px;
+    width: 0px;
+    height: 0px;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: top, left, width, height, .3s ease-in-out;
+}
+
+    .field-focus.card-number-focus {
+        border-color: white;
+        width: 400px;
+        height: 43px;
+        left: 41px;
+        top: 123px;
+    }
+
+    .field-focus.card-name-focus {
+        border-color: white;
+        width: 351px;
+        height: 52px;
+        left: 10px;
+        top: 180px;
+    }
+
+    .field-focus.card-date-focus {
+        border-color: white;
+        width: 83px;
+        height: 52px;
+        left: 360px;
+        top: 180px;
+    }

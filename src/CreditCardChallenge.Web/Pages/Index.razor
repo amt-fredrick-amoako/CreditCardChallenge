@@ -7,13 +7,22 @@
 <form method="post" class="form-container" @onsubmit="SubmitForm">
 
     <div class="cards @(isRotated ? "rotate" : "")">
-        <CardComponent CardDetails="@CardDetails" MonthExpiry="@MonthExpiry" YearExpiry="@YearExpiry" YearValueExpiry="@YearValueExpiry" MonthValueExpiry="@MonthValueExpiry"/>
+        <CardComponent CardDetails="@CardDetails"
+                       MonthExpiry="@MonthExpiry"
+                       YearExpiry="@YearExpiry"
+                       YearValueExpiry="@YearValueExpiry"
+                       MonthValueExpiry="@MonthValueExpiry"
+                       CardNumberFocus="@CardNumberAnimation"
+                       CardNameFocus="@CardNameAnimation"
+                       CardDateFocus="@CardDateAnimation"/>
     </div>
 
     <div class="form-input">
         <div class="input-container w-100">
             <label for="cardNumber" class="form-label">Card Number</label>
             <input @attributes="@CardNumberAttributes"
+            @onfocusin="@(args => CardNumberAnimation = "field-focus card-number-focus")"
+            @onfocusout="@(args => CardNumberAnimation = "")"
             @oninput="args => HandleNumberInput(args)"
                    name="cardNumber" value="@CardDetails.CardNumber">
             <span class="validation-message">
@@ -23,13 +32,20 @@
         <div class="input-container w-100">
             <label for="cardName" class="form-label">Card Name</label>
             <input @attributes="@CardNameAttributes"
+            @onfocusin="@(args => CardNameAnimation = "field-focus card-name-focus")"
+            @onfocusout="@(args => CardNameAnimation = "")"
             @oninput="args => HandleNameInput(args)" name="cardName" value="@CardDetails.CardName">
             <span class="validation-message">
                 @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardName))?.ErrorMessage)
             </span>
         </div>
         <div class="security w-100 justify-content-between">
-            <div class="select-container w-75">
+            <div class="select-container w-75"
+            @onclick="@(args => CardDateAnimation = "field-focus card-date-focus")"
+            @onclick:stopPropagation="false"
+            @onclick:preventDefault="false"
+            @onfocusout="@(args => CardDateAnimation = "")"
+            >
                 <label for="expiry" class="form-label">Expiration Date</label>
                 <select @onchange="args => HandleMonthChange(args)" id="expiry" name="month" class="mr-20 form-select d-inline">
                     <option disabled selected value="">Month</option>
@@ -93,6 +109,9 @@
     string YearExpiry { get; set; } = string.Empty;
     string MonthValueExpiry { get; set; } = string.Empty;
     string YearValueExpiry { get; set; } = string.Empty;
+    string CardNumberAnimation { get; set; } = string.Empty;
+    string CardNameAnimation { get; set; } = string.Empty;
+    string CardDateAnimation { get; set; } = string.Empty;
 
     void Rotate()
     {
@@ -181,5 +200,10 @@
         CardDetails.Year = args.Value as string;
         YearExpiry = "swipe-up";
         YearValueExpiry = "swipe-value-up";
+    }
+
+    void HandleNumberFocus(FocusEventArgs args)
+    {
+        CardNumberAnimation = "field-focus card-number-focus";
     }
 }

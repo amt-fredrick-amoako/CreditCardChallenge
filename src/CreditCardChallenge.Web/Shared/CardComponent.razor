@@ -13,7 +13,7 @@
 
     </div>
 
-    <div class="card-input">
+    <div class="card-input @CardNumberFocus">
 
         @for (int i = 0; i < 16; i++)
         {
@@ -23,7 +23,7 @@
     </div>
 
     <div class="card-bottom">
-        <div class="card-name">
+        <div class="card-name @CardNameFocus">
             <h6 class="font-monospace">
                 Card Holder
             </h6>
@@ -31,7 +31,7 @@
                 @(CardDetails.CardName ?? " AD SOYAD")
             </h5>
         </div>
-        <div class="card-expire">
+        <div class="card-expire @CardDateFocus">
             <h6 class="font-monospace">
                 Expires
             </h6>
@@ -86,6 +86,17 @@
 @code {
     [Parameter]
     public CardDetails? CardDetails { get; set; }
+
+    [Parameter]
+    public string CardNumberFocus { get; set; }
+
+    [Parameter]
+    public string CardNameFocus { get; set; }
+
+    [Parameter]
+    public string CardDateFocus { get; set; }
+
+    public string[] CardNumber { get; set; }
 
     [Parameter]
     public string MonthExpiry { get; set; }
@@ -166,4 +177,6 @@
             _ => "transform: translateY(0);"
         };
     }
+    // store card number into a variable
+    // manipulate that variable
 }
