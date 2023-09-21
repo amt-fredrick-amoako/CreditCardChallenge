@@ -1,6 +1,5 @@
-﻿
-<div class="card-container">
-
+﻿<div class="card-container">
+    <div id="pointer" @attributes="Style"></div>
     <div class="card-top">
 
         <div class="sticker">
@@ -13,17 +12,32 @@
 
     </div>
 
-    <div class="card-input @CardNumberFocus">
-
-        @for (int i = 0; i < 16; i++)
-        {
+    @* <div class="card-input @CardNumberFocus">
+    
+       @for (int i = 0; i < 16; i++)
+        { 
             <span class="font-monospace" style="font-size: 30px;">@GetDisplayCharacter(i)</span>
-        }
+         } 
+        </div> *@
 
-    </div>
+    <ul id="snum" class="card-input">
+        @for (int i = 0; i < 4; i++)
+        {
+            <li>
+                @for (int j = 0; j < 4; j++)
+                {
+                    bool isCardNumberNotEmpty = CardNumbers[i * 4 + j] != "#";
+                    <span class="stars1 @(isCardNumberNotEmpty ? "active" : "")">
+                        <label class="star">#</label><label class="label">@CardNumbers[i * 4 + j]</label>
+                    </span>
+                }
+            </li>
+        }
+    </ul>
+
 
     <div class="card-bottom">
-        <div class="card-name @CardNameFocus">
+        <div class="card-name">
             <h6 class="font-monospace">
                 Card Holder
             </h6>
@@ -31,7 +45,7 @@
                 @(CardDetails.CardName ?? " AD SOYAD")
             </h5>
         </div>
-        <div class="card-expire @CardDateFocus">
+        <div class="card-expire">
             <h6 class="font-monospace">
                 Expires
             </h6>
@@ -84,8 +98,12 @@
 
 
 @code {
+
     [Parameter]
     public CardDetails? CardDetails { get; set; }
+
+    [Parameter]
+    public string[] CardNumbers { get; set; } = new string[16];
 
     [Parameter]
     public string CardNumberFocus { get; set; }
@@ -110,6 +128,12 @@
     [Parameter]
     public string YearValueExpiry { get; set; } = string.Empty;
 
+    [Parameter]
+    public bool IsInputActive { get; set; }
+
+    [Parameter]
+    public Dictionary<string, object> Style{ get; set; }
+
     private string GetDisplayCharacter(int index)
     {
         if (CardDetails != null && CardDetails.CardNumber != null && index < CardDetails.CardNumber.Length)
@@ -130,14 +154,13 @@
     }
 
 
-
     // Method to format the card number
     private string FormatCardNumber(string input)
     {
-        // Remove any existing spaces
+    // Remove any existing spaces
         string formatted = input.Replace(" ", "");
 
-        // Insert spaces after every four characters
+    // Insert spaces after every four characters
         if (formatted.Length > 4)
         {
             formatted = string.Join(" ", Enumerable.Range(0, (int)Math.Ceiling(formatted.Length / 4.0))
@@ -163,10 +186,10 @@
         {
             return "visa";
         }
-        // Remove any spaces and non-digit characters
+    // Remove any spaces and non-digit characters
         string cleanCardNumber = new string(cardNumber.Where(char.IsDigit).ToArray());
 
-        // Take the first four digits
+    // Take the first four digits
         string firstFourDigits = cleanCardNumber.Length >= 4 ? cleanCardNumber.Substring(0, 4) : cleanCardNumber;
 
         return firstFourDigits switch
@@ -175,8 +198,41 @@
             var digits when digits.StartsWith("5") && digits.Length == 4 => "transform: translateY(-130%);",
             var digits when digits == "6011" || digits == "65" => "transform: translateY(-910%);",
             _ => "transform: translateY(0);"
-        };
+            };
     }
+
     // store card number into a variable
     // manipulate that variable
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+    // Ensure CardDetails is not null and CardNumber is not null or empty
+        if (CardDetails != null && !string.IsNullOrEmpty(CardDetails.CardNumber))
+        {
+    // Update CardNumbers with individual characters
+            for (int i = 0; i < CardNumbers.Length; i++)
+            {
+                if (i < CardDetails.CardNumber.Length)
+                {
+                    CardNumbers[i] = CardDetails.CardNumber[i].ToString();
+                }
+                else
+                {
+    // If CardDetails.CardNumber is shorter than 16 characters, fill the remaining elements with "#"
+                    CardNumbers[i] = "#";
+                }
+            }
+        }
+        else
+        {
+    // If CardDetails or CardNumber is null or empty, set all elements to "#"
+            for (int i = 0; i < CardNumbers.Length; i++)
+            {
+                CardNumbers[i] = "#";
+            }
+        }
+    }
+
 }

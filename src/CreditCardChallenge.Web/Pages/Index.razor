@@ -14,16 +14,22 @@
                        MonthValueExpiry="@MonthValueExpiry"
                        CardNumberFocus="@CardNumberAnimation"
                        CardNameFocus="@CardNameAnimation"
-                       CardDateFocus="@CardDateAnimation"/>
+                       CardDateFocus="@CardDateAnimation"
+                       IsInputActive="@IsInputActive"
+                       Style="@Style" />
     </div>
 
     <div class="form-input">
         <div class="input-container w-100">
             <label for="cardNumber" class="form-label">Card Number</label>
             <input @attributes="@CardNumberAttributes"
-            @onfocusin="@(args => CardNumberAnimation = "field-focus card-number-focus")"
+            @onfocusin="@(args => {CardNumberAnimation = "field-focus card-number-focus"; Style = new Dictionary<string, object>
+                {
+                    {"style", "opacity: 1; top: 122px; left: 25px; width: 397px; height: 54px;"}
+                };})"
             @onfocusout="@(args => CardNumberAnimation = "")"
             @oninput="args => HandleNumberInput(args)"
+            @onkeyup="HandleKeyUp"
                    name="cardNumber" value="@CardDetails.CardNumber">
             <span class="validation-message">
                 @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardNumber))?.ErrorMessage)
@@ -32,7 +38,10 @@
         <div class="input-container w-100">
             <label for="cardName" class="form-label">Card Name</label>
             <input @attributes="@CardNameAttributes"
-            @onfocusin="@(args => CardNameAnimation = "field-focus card-name-focus")"
+            @onfocusin="@(args => {CardNameAnimation = "field-focus card-name-focus"; Style=new Dictionary<string, object>
+                {
+                    {"style", "opacity: 1; top: 210px; left: 20px; width: 277px; height: 76px;"}
+                };})"
             @onfocusout="@(args => CardNameAnimation = "")"
             @oninput="args => HandleNameInput(args)" name="cardName" value="@CardDetails.CardName">
             <span class="validation-message">
@@ -41,11 +50,11 @@
         </div>
         <div class="security w-100 justify-content-between">
             <div class="select-container w-75"
-            @onclick="@(args => CardDateAnimation = "field-focus card-date-focus")"
-            @onclick:stopPropagation="false"
-            @onclick:preventDefault="false"
-            @onfocusout="@(args => CardDateAnimation = "")"
-            >
+            @onclick="@(args => {CardDateAnimation = "field-focus card-date-focus"; Style=new Dictionary<string, object>
+                {
+                {"style","opacity: 1; top: 183px; left: 368.475px; width: 104px; height: 92px;"}
+                };})"
+            @onfocusout="@(args => CardDateAnimation = "")">
                 <label for="expiry" class="form-label">Expiration Date</label>
                 <select @onchange="args => HandleMonthChange(args)" id="expiry" name="month" class="mr-20 form-select d-inline">
                     <option disabled selected value="">Month</option>
@@ -87,14 +96,14 @@
         {"maxlength", "16"},
         {"type", "number"},
         {"format", "^[0-9]{16}$"},
-        {"class", "form-control"}
+        {"class", "form-control mb-3"}
     };
 
     Dictionary<string, object> CardNameAttributes { get; set; } = new()
     {
         {"id", "cardName"},
         {"type", "text"},
-        {"class", "form-control"}
+        {"class", "form-control mb-3"}
     };
 
     string[] Years { get; set; }
@@ -112,7 +121,8 @@
     string CardNumberAnimation { get; set; } = string.Empty;
     string CardNameAnimation { get; set; } = string.Empty;
     string CardDateAnimation { get; set; } = string.Empty;
-
+    bool IsInputActive { get; set; } = false;
+    Dictionary<string, object> Style { get; set; } = new();
     void Rotate()
     {
         isRotated = true;
@@ -206,4 +216,10 @@
     {
         CardNumberAnimation = "field-focus card-number-focus";
     }
+
+    private void HandleKeyUp(KeyboardEventArgs args)
+    {
+        Console.WriteLine($"Key: {args.Key} pressed!");
+    }
+
 }
