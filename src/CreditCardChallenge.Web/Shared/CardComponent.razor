@@ -34,7 +34,19 @@
                 Card Holder
             </h6>
             <h5 class="font-monospace">
-                @(CardDetails.CardName ?? " AD SOYAD")
+                <div style="width: auto; height: 18px">
+                    @if (CardDetails.CardName is null)
+                    {
+                        <span style="font-weight: bold;">AD SOYAD</span>
+                    }
+                    else
+                    {
+                        foreach (var character in CardDetails.CardName.ToCharArray())
+                        {
+                            <span class="@(char.IsWhiteSpace(character) ? string.Empty : "animated-character")">@character</span>
+                        }
+                    }
+                </div>
             </h5>
         </div>
         <div class="card-expire">
@@ -96,7 +108,10 @@
 
     [Parameter]
     public string[] CardNumbers { get; set; } = new string[16];
-    
+
+    [Parameter]
+    public string[] CardNameCharacters { get; set; }
+
     [Parameter]
     public string MonthExpiry { get; set; }
 
@@ -110,8 +125,8 @@
     public string YearValueExpiry { get; set; } = string.Empty;
 
     [Parameter]
-    public Dictionary<string, object> Style{ get; set; }
-   
+    public Dictionary<string, object> Style { get; set; }
+
     string GetYear(string year)
     {
         if (string.IsNullOrEmpty(year))
@@ -121,7 +136,7 @@
 
         return year.Substring(2);
     }
-    
+
     // Get Card type i.e "visa", "master", "discover"
     public static string GetCardType(string cardNumber)
     {
@@ -147,23 +162,25 @@
     // store card number into a variable
     // manipulate that variable
 
-    protected override void OnParametersSet()
+    // Get card number as an array
+    void PopulateCardNumber()
     {
-        base.OnParametersSet();
-
     // Ensure CardDetails is not null and CardNumber is not null or empty
         if (CardDetails != null && !string.IsNullOrEmpty(CardDetails.CardNumber))
         {
+    // Remove spaces from CardDetails.CardNumber
+            string cleanedCardNumber = CardDetails.CardNumber.Replace(" ", "");
+
     // Update CardNumbers with individual characters
             for (int i = 0; i < CardNumbers.Length; i++)
             {
-                if (i < CardDetails.CardNumber.Length)
+                if (i < cleanedCardNumber.Length)
                 {
-                    CardNumbers[i] = CardDetails.CardNumber[i].ToString();
+                    CardNumbers[i] = cleanedCardNumber[i].ToString();
                 }
                 else
                 {
-    // If CardDetails.CardNumber is shorter than 16 characters, fill the remaining elements with "#"
+    // If cleanedCardNumber is shorter than 16 characters, fill the remaining elements with "#"
                     CardNumbers[i] = "#";
                 }
             }
@@ -176,6 +193,13 @@
                 CardNumbers[i] = "#";
             }
         }
+    }
+
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        PopulateCardNumber();
     }
 
 }

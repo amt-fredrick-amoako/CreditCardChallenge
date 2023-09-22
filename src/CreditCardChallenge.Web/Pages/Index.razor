@@ -1,4 +1,5 @@
 ﻿@page "/"
+@using System.Text
 @inject IJSRuntime JavaScript
 @inject HttpClient HttpClient
 @inject CardDetailsValidator CardDetailsValidator
@@ -12,10 +13,10 @@
 
     <div class="form-input">
         <div class="input-container w-100">
-            <label for="cardNumber" class="form-label">Card Number</label>
+            <label for="cardNumber" class="form-label font-monospace">Card Number</label>
             <input @attributes="@CardNumberAttributes"
-                   @onfocusin="@(args => { Style = new Dictionary<string, object> { { "style", "opacity: 1; top: 122px; left: 25px; width: 397px; height: 54px;" } }; })"
-                   @oninput="args => HandleNumberInput(args)"
+                   @onfocusin="@(() => { Style = new() { { "style", "opacity: 1; top: 122px; left: 25px; width: 397px; height: 54px;" } }; })"
+                   @oninput="HandleNumberInput"
                    @onkeyup="HandleKeyUp"
                    name="cardNumber" value="@CardDetails.CardNumber">
             <span class="validation-message">
@@ -23,37 +24,37 @@
             </span>
         </div>
         <div class="input-container w-100">
-            <label for="cardName" class="form-label">Card Name</label>
+            <label for="cardName" class="form-label font-monospace">Card Name</label>
             <input @attributes="@CardNameAttributes"
-                   @onfocusin="@(args => { Style = new Dictionary<string, object> { { "style", "opacity: 1; top: 210px; left: 14px; width: 277px; height: 76px;" } }; })"
-                   @oninput="args => HandleNameInput(args)" name="cardName" value="@CardDetails.CardName">
+                   @onfocusin="@(() => { Style = new() { { "style", "opacity: 1; top: 210px; left: 14px; width: 362px; height: 76px;" } }; })"
+                   @oninput="HandleNameInput" name="cardName" value="@CardDetails.CardName" pattern="[A-Z\sa-z]+">
             <span class="validation-message">
                 @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.CardName))?.ErrorMessage)
             </span>
         </div>
         <div class="security w-100 justify-content-between">
             <div class="select-container w-75"
-                 @onclick="@(args => { Style = new Dictionary<string, object> { { "style", "opacity: 1; top: 210px; left: 378.475px; width: 104px; height: 76px;" } }; })">
-                <label for="expiry" class="form-label">Expiration Date</label>
-                <select @onchange="args => HandleMonthChange(args)" id="expiry" name="month" class="mr-20 form-select d-inline">
-                    <option disabled selected value="">Month</option>
+                 @onclick="@(() => { Style = new() { { "style", "opacity: 1; top: 210px; left: 378.475px; width: 104px; height: 76px;" } }; })">
+                <label for="expiry" class="form-label font-monospace">Expiration Date</label>
+                <select @onchange="HandleMonthChange" id="expiry" name="month" class="mr-20 form-select d-inline">
+                    <option disabled selected value="" class="font-monospace">Month</option>
                     @foreach (var month in Months)
                     {
-                        <option value="@month">@month</option>
+                        <option value="@month" class="font-monospace">@month</option>
                     }
                 </select>
 
-                <select @onchange="args => HandleYearChange(args)" name="year" class="form-select d-inline">
-                    <option disabled selected value="">Year</option>
+                <select @onchange="HandleYearChange" name="year" class="form-select d-inline">
+                    <option disabled selected value="" class="font-monospace">Year</option>
                     @foreach (var year in Years)
                     {
-                        <option value="@year">@year</option>
+                        <option value="@year" class="font-monospace">@year</option>
                     }
                 </select>
 
             </div>
             <div class="input-container">
-                <label for="cvv" class="form-label">CVV</label>
+                <label for="cvv" class="form-label font-monospace">CVV</label>
                 <input id="cvv" maxlength="4" type="number" class="cvv form-control" @bind="@CardDetails.Cvv" @bind:event="oninput" @onfocusin="Rotate" @onfocusout="RotateBack" name="cvv"/>
                 <span class="validation-message">
                     @(validationErrors?.Errors.FirstOrDefault(e => e.PropertyName == nameof(CardDetails.Cvv))?.ErrorMessage)
@@ -69,27 +70,26 @@
 @code {
     CardDetails? CardDetails { get; set; }
 
-    Dictionary<string, object> CardNumberAttributes { get; set; } = new()
+    Dictionary<string, object> CardNumberAttributes { get; } = new()
     {
         { "id", "cardNumber" },
-        { "maxlength", "16" },
-        { "type", "number" },
-        { "format", "^[0-9]{16}$" },
+        { "type", "text" },
+        { "maxlength", "19" },
         { "class", "form-control mb-3" }
     };
 
-    Dictionary<string, object> CardNameAttributes { get; set; } = new()
+    Dictionary<string, object> CardNameAttributes { get; } = new()
     {
         { "id", "cardName" },
         { "type", "text" },
-        { "class", "form-control mb-3" }
+        { "class", "form-control mb-3" },
     };
 
     string[] Years { get; set; }
 
     string[] Months { get; set; }
 
-    bool isRotated = false;
+    bool isRotated { get; set; }
 
     ValidationResult validationErrors;
 
@@ -97,7 +97,6 @@
     string YearExpiry { get; set; } = string.Empty;
     string MonthValueExpiry { get; set; } = string.Empty;
     string YearValueExpiry { get; set; } = string.Empty;
-    bool IsInputActive { get; set; } = false;
     Dictionary<string, object> Style { get; set; } = new();
 
     void Rotate()
@@ -124,49 +123,120 @@
             .ToArray();
     }
 
+    #region SweetAlertMessageModals
+
     // display message modal
     async void ShowMessage(CardResponse response)
     {
-        var messageParams = new
+        try
         {
-            title = response.Message,
-            text = $"Name on Card: {response.CardName}, Card Number: {response.CardNumber}, Card Expiry {response.Month}/{response.Year}, CVV: {response.Cvv}",
-            icon = "success",
-            buttons = new
+            var messageParams = new
             {
-                confirm = new { text = "Okay", value = true }
-            },
-            dangerMode = false
-        };
+                title = response.Message,
+                text = $"Name on Card: {response.CardName}, Card Number: {response.CardNumber}, Card Expiry {response.Month}/{response.Year}, CVV: {response.Cvv}",
+                icon = "success",
+                buttons = new
+                {
+                    confirm = new { text = "Okay", value = true }
+                },
+                dangerMode = false
+            };
 
-        await JavaScript.InvokeAsync<bool>("swal", messageParams);
+            await JavaScript.InvokeAsync<bool>("swal", messageParams);
+        }
+        catch
+            (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
+
+    // display error message
+    async Task ShowErrorMessage(Exception ex)
+    {
+        try
+        {
+            var messageParams = new
+            {
+                title = "Error",
+                text = $"There has been an error, {ex.Message}, please try again later",
+                icon = "error",
+                buttons = new
+                {
+                    confirm = new { text = "Okay", value = true }
+                },
+                dangerMode = true
+            };
+
+            await JavaScript.InvokeAsync<bool>("swal", messageParams);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    #endregion
+
+    #region FormSubmission
 
     // makes a post request when form is submitted
     async void SubmitForm()
     {
     // perform model validations using fluent validator
-        validationErrors = CardDetailsValidator.Validate(CardDetails);
+        try
+        {
+            validationErrors = await CardDetailsValidator.ValidateAsync(CardDetails);
 
-        if (validationErrors.IsValid)
-        {
-            var response = await HttpClient.PostAsJsonAsync($"https://localhost:7063/validate-card-number", CardDetails);
-            var message = await response.Content.ReadAsStringAsync();
-            var cardResponse = JsonConvert.DeserializeObject<CardResponse>(message);
-            ShowMessage(cardResponse);
-        }
-        else
-        {
-            foreach (var error in validationErrors.Errors)
+            if (validationErrors.IsValid)
             {
-                Console.WriteLine(error.ErrorMessage);
+                var response = await HttpClient.PostAsJsonAsync($"https://localhost:7063/validate-card-number", CardDetails);
+                var message = await response.Content.ReadAsStringAsync();
+                var cardResponse = JsonConvert.DeserializeObject<CardResponse>(message);
+                ShowMessage(cardResponse);
             }
+            else
+            {
+                foreach (var error in validationErrors.Errors)
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            ShowErrorMessage(e);
+            Console.WriteLine(e);
         }
     }
 
+    #endregion
+
+    #region EventHandlerMethods
+
     void HandleNameInput(ChangeEventArgs args) => CardDetails.CardName = args.Value as string;
 
-    void HandleNumberInput(ChangeEventArgs args) => CardDetails.CardNumber = args.Value as string;
+    void HandleNumberInput(ChangeEventArgs args)
+    {
+        string input = args.Value as string;
+    // Remove any non-digit characters from the input
+        string cleanInput = new string(input.Where(char.IsDigit).ToArray());
+    // Initialize a formatted string
+        StringBuilder formattedInput = new StringBuilder();
+    // Iterate through the clean input and add gaps
+        for (int i = 0; i < cleanInput.Length; i++)
+        {
+    // Add a gap every four characters, but not at the beginning
+            if (i > 0 && i % 4 == 0)
+            {
+                formattedInput.Append(' '); // Add a gap
+            }
+            formattedInput.Append(cleanInput[i]);
+        }
+    // Update the CardNumber property with the formatted input
+        CardDetails.CardNumber = formattedInput.ToString();
+    }
 
     void HandleMonthChange(ChangeEventArgs args)
     {
@@ -182,9 +252,11 @@
         YearValueExpiry = "swipe-value-up";
     }
 
-    private void HandleKeyUp(KeyboardEventArgs args)
+    private static void HandleKeyUp(KeyboardEventArgs args)
     {
         Console.WriteLine($"Key: {args.Key} pressed!");
     }
+
+    #endregion
 
 }
