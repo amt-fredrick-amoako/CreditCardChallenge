@@ -26,10 +26,6 @@
     box-shadow: 3px 26px 20px 20px #00000021;
 }
 
-/*.cards:hover {
-    
-}*/
-
 .card-container, .card-container-back {
     position: absolute;
     width: 100%;
@@ -61,12 +57,9 @@
 
 .card-input {
     width: 85%;
-    /*height: 50px;*/
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    /*border: solid 2px white;
-    border-radius: 5px;*/
     margin: 0 auto 0 27px;
     padding: 15px;
 }
@@ -92,7 +85,6 @@
     height: auto;
     transform: translateY(0);
     transition: all .2s;
-    /*opacity: 0.1*/
 }
 
 .opacity-in {
@@ -181,41 +173,18 @@ img {
 .swipe-up {
     transform: translateY(-80%);
     transition: all .2s;
-    /*transform: translateY(-80%);
-    transition: all .2s;*/
 }
 
 .swipe-value-up {
     transform: translateY(-100%);
     transition: all .2s;
-    /*transform: translateY(-80%);
-    transition: all .2s;*/
 }
 
 /*-----------------------------------------------------------------------------------------------------*/
 
-/*#here > div > span > span {
-        display: block;
-        transform: translateY(0);
-        animation: move 0.2s linear;
-      }
-
-      @keyframes move {
-        from {
-          transform: translateY(20px);
-        }
-        to {
-          transform: translateY(0);
-        }
-      }
-
-      * {
-        transition: all 0.2s;
-      }*/
-
 /*Animation*/
 .field-focus {
-    /*position: absolute;*/
+    position: absolute;
     left: 0;
     top: 0;
     width: 0;
@@ -276,14 +245,16 @@ ul li {
     align-items: center;
 }
 
-ul li span {
-    margin: 0 2px;
-    position: relative;
-    height: 40px;
-    line-height: 40px;
-    text-align: center;
-    overflow: hidden;
-}
+    ul li span {
+        font-weight: bold;
+        width: 11px;
+        margin: 0 2px;
+        position: relative;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        overflow: hidden;
+    }
 
 ul li span .star {
     position: relative;
@@ -487,20 +458,38 @@ ul li span.active .label {
     top: 0;
 }
 
-
 .animated-character {
-    transform: translateX(100%);
-    animation: slideIn 1s ease-out forwards;
+    text-transform: uppercase;
+    transform: translateX( 10% );
+    opacity: 0;
+    animation: slideOpacityRotation 0.2s ease-out forwards;
 }
 
-/* Define the keyframes for the animation */
-@keyframes slideIn {
+@keyframes slideOpacityRotation {
     0% {
-        transform: translateX(100%);
+        transform: translateX( 10% );
+        font-style: italic;
         opacity: 0;
     }
+
+    25% {
+        transform: translateX( 9% );
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: translateX( 8% );
+        opacity: 0.5;
+    }
+
+    75% {
+        transform: translateX( 5% );
+        opacity: 0.75;
+    }
+
     100% {
-        transform: translateX(0);
+        transform: translateX( 0 );
+        font-style: normal;
         opacity: 1;
     }
 }

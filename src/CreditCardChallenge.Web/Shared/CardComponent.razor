@@ -33,7 +33,7 @@
             <h6 class="font-monospace">
                 Card Holder
             </h6>
-            <h5 class="font-monospace">
+            <h5 class="font-monospace d-flex flex-row">
                 <div style="width: auto; height: 18px">
                     @if (CardDetails.CardName is null)
                     {
@@ -43,7 +43,7 @@
                     {
                         foreach (var character in CardDetails.CardName.ToCharArray())
                         {
-                            <span class="@(char.IsWhiteSpace(character) ? string.Empty : "animated-character")">@character</span>
+                            <h5 class="@(char.IsWhiteSpace(character) ? string.Empty : "animated-character") d-inline font-monospace">@character</h5>
                         }
                     }
                 </div>
@@ -138,11 +138,11 @@
     }
 
     // Get Card type i.e "visa", "master", "discover"
-    public static string GetCardType(string cardNumber)
+    static string GetCardType(string cardNumber)
     {
         if (cardNumber is null)
         {
-            return "visa";
+            return "transform: translateY(0);";
         }
     // Remove any spaces and non-digit characters
         string cleanCardNumber = new string(cardNumber.Where(char.IsDigit).ToArray());
@@ -156,6 +156,7 @@
             var digits when digits.StartsWith("5") && digits.Length == 4 => "transform: translateY(-130%);",
             var digits when digits == "6011" || digits == "65" => "transform: translateY(-910%);",
             _ => "transform: translateY(0);"
+            
             };
     }
 
