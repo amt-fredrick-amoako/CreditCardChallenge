@@ -12,14 +12,6 @@
 
     </div>
 
-    @* <div class="card-input @CardNumberFocus">
-    
-       @for (int i = 0; i < 16; i++)
-        { 
-            <span class="font-monospace" style="font-size: 30px;">@GetDisplayCharacter(i)</span>
-         } 
-        </div> *@
-
     <ul id="snum" class="card-input">
         @for (int i = 0; i < 4; i++)
         {
@@ -104,18 +96,7 @@
 
     [Parameter]
     public string[] CardNumbers { get; set; } = new string[16];
-
-    [Parameter]
-    public string CardNumberFocus { get; set; }
-
-    [Parameter]
-    public string CardNameFocus { get; set; }
-
-    [Parameter]
-    public string CardDateFocus { get; set; }
-
-    public string[] CardNumber { get; set; }
-
+    
     [Parameter]
     public string MonthExpiry { get; set; }
 
@@ -129,47 +110,8 @@
     public string YearValueExpiry { get; set; } = string.Empty;
 
     [Parameter]
-    public bool IsInputActive { get; set; }
-
-    [Parameter]
     public Dictionary<string, object> Style{ get; set; }
-
-    private string GetDisplayCharacter(int index)
-    {
-        if (CardDetails != null && CardDetails.CardNumber != null && index < CardDetails.CardNumber.Length)
-        {
-            if ((index + 1) % 4 == 0 && index != CardDetails.CardNumber.Length - 1)
-            {
-                return FormatCardNumber(CardDetails.CardNumber[index].ToString()) + " ";
-            }
-            else
-            {
-                return FormatCardNumber(CardDetails.CardNumber[index].ToString());
-            }
-        }
-        else
-        {
-            return "#";
-        }
-    }
-
-
-    // Method to format the card number
-    private string FormatCardNumber(string input)
-    {
-    // Remove any existing spaces
-        string formatted = input.Replace(" ", "");
-
-    // Insert spaces after every four characters
-        if (formatted.Length > 4)
-        {
-            formatted = string.Join(" ", Enumerable.Range(0, (int)Math.Ceiling(formatted.Length / 4.0))
-                .Select(i => formatted.Substring(i * 4, Math.Min(4, formatted.Length - i * 4))));
-        }
-
-        return formatted;
-    }
-
+   
     string GetYear(string year)
     {
         if (string.IsNullOrEmpty(year))
@@ -179,7 +121,8 @@
 
         return year.Substring(2);
     }
-
+    
+    // Get Card type i.e "visa", "master", "discover"
     public static string GetCardType(string cardNumber)
     {
         if (cardNumber is null)

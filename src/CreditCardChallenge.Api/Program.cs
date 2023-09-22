@@ -42,7 +42,7 @@ app.UseCors();
 app.UseHttpsRedirection();
 
 // Card validation endpoint
-app.MapPost("/validate", async ([AsParameters] CardValidationRequest request) =>
+app.MapPost("/validate-card-number", async ([AsParameters] CardValidationRequest request) =>
 {
     try
     {
