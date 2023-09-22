@@ -26,10 +26,6 @@
     box-shadow: 3px 26px 20px 20px #00000021;
 }
 
-/*.cards:hover {
-    
-}*/
-
 .card-container, .card-container-back {
     position: absolute;
     width: 100%;
@@ -61,14 +57,10 @@
 
 .card-input {
     width: 85%;
-    height: 50px;
-    margin: 0 auto;
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    /*border: solid 2px white;
-    border-radius: 5px;*/
-    margin-left: 27px;
+    margin: 0 auto 0 27px;
     padding: 15px;
 }
 
@@ -88,15 +80,14 @@
     overflow: hidden;
 }
 
-    .card-type > img {
-        margin: 0 10px;
-        height: auto;
-        transform: translateY(0);
-        transition: all .2s;
-        /*opacity: 0.1*/
-    }
+.card-type > img {
+    margin: 0 10px;
+    height: auto;
+    transform: translateY(0);
+    transition: all .2s;
+}
 
-.opacity-in{
+.opacity-in {
     opacity: 1
 }
 
@@ -176,38 +167,329 @@ img {
 .sample {
     margin: 0 10px;
     height: auto;
-    
+
 }
 
 .swipe-up {
     transform: translateY(-80%);
     transition: all .2s;
-    /*transform: translateY(-80%);
-    transition: all .2s;*/
 }
+
 .swipe-value-up {
     transform: translateY(-100%);
     transition: all .2s;
-    /*transform: translateY(-80%);
-    transition: all .2s;*/
 }
+
 /*-----------------------------------------------------------------------------------------------------*/
 
-#here > div > span > span {
-        display: block;
-        transform: translateY(0);
-        animation: move 0.2s linear;
-      }
+/*Animation*/
+.field-focus {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border: 2px solid transparent;
+    border-radius: 4px;
+    transition: top, left, width, height, .3s ease-in-out;
+}
 
-      @keyframes move {
-        from {
-          transform: translateY(20px);
-        }
-        to {
-          transform: translateY(0);
-        }
-      }
+.field-focus.card-number-focus {
+    border-color: white;
+    width: 400px;
+    height: 43px;
+    left: 41px;
+    top: 123px;
+}
 
-      * {
-        transition: all 0.2s;
-      }
+.field-focus.card-name-focus {
+    border-color: white;
+    width: 351px;
+    height: 52px;
+    left: 10px;
+    top: 180px;
+}
+
+.field-focus.card-date-focus {
+    border-color: white;
+    width: 83px;
+    height: 52px;
+    left: 360px;
+    top: 180px;
+}
+
+
+/*--------------------------------------------------------------------------------*/
+ul {
+    position: relative;
+    width: 100%;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    padding: 7px 0;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    z-index: 10;
+}
+
+ul li {
+    position: relative;
+    padding: 0 2px;
+    width: 90px;
+    font-size: 17px;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+    ul li span {
+        font-weight: bold;
+        width: 11px;
+        margin: 0 2px;
+        position: relative;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        overflow: hidden;
+    }
+
+ul li span .star {
+    position: relative;
+    top: 0;
+    left: 0;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    transition: 0.35s;
+    opacity: 1;
+}
+
+ul li span .label {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, 0);
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    transition: 0.35s;
+    opacity: 0;
+}
+
+ul li span.active .star {
+    top: -100%;
+    opacity: 0;
+}
+
+ul li span.active .label {
+    opacity: 1;
+    transform: translate(-50%, -100%);
+}
+
+.label {
+    font-size: 20px;
+}
+
+.card .details {
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: row;
+    width: 100%;
+    padding: 0 10px;
+}
+
+.card .details .name {
+    width: calc(100% - 100px);
+}
+
+.card .details .date {
+    width: 100px;
+}
+
+.card .details .name,
+.card .details .date {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 10px;
+    z-index: 10;
+}
+
+.card .details div {
+    letter-spacing: 1px;
+}
+
+.card .details div span {
+    margin-bottom: 8px;
+    opacity: 0.7;
+}
+
+.card .date .my {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    overflow-y: hidden;
+}
+
+.card .date .my #mm_set, .card .date .my #yy_set {
+    line-height: 40px;
+    position: relative;
+}
+
+.card .date .my #mm_set {
+    margin-right: 3px;
+}
+
+.card .date .my #yy_set {
+    margin-left: 3px;
+}
+
+.card .date .my #mm_set .yy, .card .date .my #yy_set .yy {
+    position: relative;
+    transition: 0.3s;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    transform: translateY(100%);
+}
+
+.card .date .my #yy_set .yy {
+    margin-left: 10px;
+}
+
+.card .date .my #mm_set .mm, .card .date .my #yy_set .mm {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    line-height: 40px;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.card .date .my #mm_set.active .mm {
+    top: -100%;
+}
+
+.card .date .my #yy_set.active .mm {
+    top: -100%;
+}
+
+.card .date .my #mm_set.active .yy {
+    transform: translateY(0%);
+}
+
+.card .date .my #yy_set.active .yy {
+    transform: translateY(0%);
+}
+
+.card .full label {
+    margin-left: 5px;
+}
+
+.card .back1 {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background-color: white;
+    position: absolute;
+    transform: rotateY(-180deg);
+    transition: 0.5s;
+    opacity: 0;
+    padding: 10px;
+    background-image: linear-gradient(rgb(0, 0, 0, 0.7), rgb(0, 0, 0, 0.7));
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
+.card .back1 img {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+}
+
+.card .back1 p {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 7px;
+    letter-spacing: 1px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.card .back1 p label {
+    margin: 0 10px;
+}
+
+.card.active {
+    transform: translateY(-50px) rotateY(180deg);
+}
+
+.card.active .back1 {
+    opacity: 1;
+}
+
+.card.active .card1 {
+    opacity: 0;
+}
+
+#pointer {
+    position: absolute;
+    z-index: 5;
+    opacity: 0;
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgb(255, 255, 255, 0.6);
+    border-radius: 8px;
+    transition: 0.3s;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+
+.animated-character {
+    text-transform: uppercase;
+    transform: translateX( 10% );
+    opacity: 0;
+    animation: slideOpacityRotation 0.2s ease-out forwards;
+}
+
+@keyframes slideOpacityRotation {
+    0% {
+        transform: translateX( 10% );
+        font-style: italic;
+        opacity: 0;
+    }
+
+    25% {
+        transform: translateX( 9% );
+        opacity: 0.25;
+    }
+
+    50% {
+        transform: translateX( 8% );
+        opacity: 0.5;
+    }
+
+    75% {
+        transform: translateX( 5% );
+        opacity: 0.75;
+    }
+
+    100% {
+        transform: translateX( 0 );
+        font-style: normal;
+        opacity: 1;
+    }
+}
